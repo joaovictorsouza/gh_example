@@ -1,4 +1,5 @@
-import com.android.build.api.variant.BuildConfigField
+import java.io.FileInputStream
+import java.util.Properties
 
 
 plugins {
@@ -26,7 +27,15 @@ android {
         }
     }
 
+    val apiProperties = Properties()
+    apiProperties.load(FileInputStream(project.rootProject.file("api.properties")))
+
     buildTypes {
+        all {
+            val ghKey = apiProperties.getProperty("GH_API_KEY")
+            buildConfigField("String", "API_KEY", "\"${ghKey}\"")
+            buildConfigField("String", "Teste", "\"teste\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -44,6 +53,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
