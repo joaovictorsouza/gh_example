@@ -32,6 +32,7 @@ import coil.request.ImageRequest
 import compose.icons.Octicons
 import compose.icons.octicons.RepoForked16
 import compose.icons.octicons.Star16
+import compose.icons.octicons.StarFill16
 
 @Composable
 fun RepositoryItem(item: Repo, modifier: Modifier = Modifier) {
@@ -57,12 +58,12 @@ fun RepositoryItem(item: Repo, modifier: Modifier = Modifier) {
                 RepositoryCounter(
                     count = item.forksCount,
                     icon = Octicons.RepoForked16,
-                    contentDescription = "Número de forks"
+                    contentDescription = stringResource(R.string.txt_fork_number)
                 )
                 RepositoryCounter(
                     count = item.stargazersCount,
-                    icon = Octicons.Star16,
-                    contentDescription = "Número de estrelas"
+                    icon = Octicons.StarFill16,
+                    contentDescription = stringResource(R.string.txt_start_number)
                 )
             }
         }
@@ -94,7 +95,8 @@ fun OwnerDetails(imageUrl: String, ownerName: String, modifier: Modifier = Modif
 @Composable
 fun RepositoryCounter(count: Int, icon: ImageVector, contentDescription: String, modifier: Modifier = Modifier) {
     Row(
-        modifier = modifier.height(28.dp)
+        modifier = modifier
+            .height(28.dp)
             .padding(top = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)) {

@@ -7,5 +7,7 @@
     <string name="btn_retry">Tentar novamente</string>
     <string name="error_http_exception">Houve um erro ao carregar os dados do servidor.</string>
     <string name="error_io_exception">Houve um erro desconhecido ao processar os dados.</string>
+    <string name="txt_start_number">Número de estrelas</string>
+    <string name="txt_fork_number">Número de forks</string>
     <!-- Descrição de Conteúdo -->
 </resources>
