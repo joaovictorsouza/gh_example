@@ -1,3 +1,5 @@
+import java.io.FileInputStream
+import java.util.Properties
 
 
 plugins {
@@ -25,17 +27,21 @@ android {
         }
     }
 
+    val apiProperties = Properties()
+    apiProperties.load(FileInputStream(project.rootProject.file("api.properties")))
+
     buildTypes {
+        all {
+            val ghKey = apiProperties.getProperty("GH_API_KEY")
+            buildConfigField("String", "API_KEY", "\"${ghKey}\"")
+            buildConfigField("String", "Teste", "\"teste\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        debug {
-            isDebuggable = true
-            applicationIdSuffix = ".debug"
         }
     }
     compileOptions {
@@ -54,7 +60,10 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/{AL2.0,LGPL2.1,LICENSE.md,LICENSE-notice.md}"
+        }
+        jniLibs {
+            useLegacyPackaging = true
         }
     }
 }
@@ -76,12 +85,28 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.kotlinx.serialization)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.serialization)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
     ksp(libs.hilt.compiler)
+    implementation(libs.coil.compose)
+    implementation(libs.androidx.paging)
+    implementation(libs.androidx.paging.compose)
+    implementation(libs.composeIcons.octicons)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk.android)
+    testImplementation(libs.mockk.agent)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.androidx.paging.common)
+    testImplementation(libs.androidx.paging.testing)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

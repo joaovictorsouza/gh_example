@@ -2,5 +2,12 @@
     <string name="app_name">Github Test</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_screen_repo">Repositórios</string>
+    <string name="text_list_repos_screen">Java no Github</string>
+    <string name="txt_description_owner_image">Imagem do usuário %1$s</string>
+    <string name="btn_retry">Tentar novamente</string>
+    <string name="error_http_exception">Houve um erro ao carregar os dados do servidor.</string>
+    <string name="error_io_exception">Houve um erro desconhecido ao processar os dados.</string>
+    <string name="txt_start_number">Número de estrelas</string>
+    <string name="txt_fork_number">Número de forks</string>
     <!-- Descrição de Conteúdo -->
 </resources>
