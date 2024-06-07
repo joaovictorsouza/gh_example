@@ -8,12 +8,19 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import br.eng.joaovictor.gh.data.datasource.remote.ApiService
 import br.eng.joaovictor.gh.data.model.ApiResult
+import br.eng.joaovictor.gh.data.model.Pull
 import br.eng.joaovictor.gh.data.model.Repo
+import br.eng.joaovictor.gh.data.repository.PullRepository
+import br.eng.joaovictor.gh.data.repository.PullRepositoryImpl
 import br.eng.joaovictor.gh.data.repository.RepoRepository
 import br.eng.joaovictor.gh.data.repository.RepoRepositoryImpl
+import br.eng.joaovictor.gh.ui.screens.pull_requests.PullRequestsScreen
+import br.eng.joaovictor.gh.ui.screens.pull_requests.PullRequestsViewModel
 import br.eng.joaovictor.gh.ui.screens.repositories.ListRepositoryScreen
 import br.eng.joaovictor.gh.ui.screens.repositories.RepositoriesViewModel
 import br.eng.joaovictor.gh.ui.theme.GithubTestTheme
+import br.eng.joaovictor.gh.utils.pullListPage1
+import br.eng.joaovictor.gh.utils.pullListPage2
 import br.eng.joaovictor.gh.utils.repoListPage1
 import br.eng.joaovictor.gh.utils.repoListPage2
 import io.mockk.coEvery
@@ -33,23 +40,23 @@ import org.junit.Assert.assertEquals
 
 @RunWith(AndroidJUnit4::class)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalTestApi::class)
-class ListRepositoryScreenTest {
+class PullRequestsScreenTest {
 
     @get:Rule
     val composeTestRule = createComposeRule()
     private lateinit var apiService: ApiService
-    private lateinit var repoRepository: RepoRepository
-    private lateinit var viewModel: RepositoriesViewModel
+    private lateinit var repoRepository: PullRepository
+    private lateinit var viewModel: PullRequestsViewModel
 
     @Before
     fun setup() {
         apiService = mockk()
-        repoRepository = RepoRepositoryImpl(apiService)
-        viewModel = RepositoriesViewModel(repoRepository)
+        repoRepository = PullRepositoryImpl(apiService)
+        viewModel = PullRequestsViewModel(repoRepository)
     }
 
-    private fun setMockApiResult(apiResult: ApiResult<Repo>) {
-        coEvery { apiService.search(any(), any(), any()) }.returns(apiResult)
+    private fun setMockApiResult(list: List<Pull>) {
+        coEvery { apiService.getPullRequests(any(), any(), any()) }.returns(list)
     }
 
     private fun setMockApiError(error: Throwable) {
@@ -60,7 +67,12 @@ class ListRepositoryScreenTest {
         composeTestRule.setContent {
             val navController = rememberNavController()
             GithubTestTheme {
-                ListRepositoryScreen(viewModel, navController)
+                PullRequestsScreen(
+                    ownerName = "User1",
+                    repoName = "Repo1",
+                    viewModel = viewModel,
+                    navController = navController
+                )
             }
         }
     }
@@ -74,9 +86,9 @@ class ListRepositoryScreenTest {
 
     @Test
     fun screen_loading_checkIfProgressBarIsDisplayed() = runTest {
-        coEvery { apiService.search(any(), any(), any()) }.coAnswers {
+        coEvery { apiService.getPullRequests(any(), any(), any()) }.coAnswers {
             delay(Duration.ofSeconds(2))
-            ApiResult(0, false, emptyList())
+            emptyList()
         }
 
         launchScreen()
@@ -93,43 +105,43 @@ class ListRepositoryScreenTest {
 
     @Test
     fun lazyColumn_emptyList_checkIfEmptyPageIsDisplayed() = runTest {
-        setMockApiResult(ApiResult(0, false, emptyList()))
+        setMockApiResult(emptyList())
         launchScreen()
         composeTestRule.onNodeWithTag("empty_page").assertIsDisplayed()
     }
 
     @Test
     fun lazyColumn_onePage_checkIfAllItemsAreDisplayed() = runTest {
-        setMockApiResult(ApiResult(repoListPage1.size, false, repoListPage1))
+        setMockApiResult(pullListPage1)
         launchScreen()
-        repoListPage1.forEach { repo ->
-            composeTestRule.onNodeWithTag("lazy_list").performScrollToKey(repo.hashCode()).assertIsDisplayed()
+        pullListPage1.forEach { pull ->
+            composeTestRule.onNodeWithTag("lazy_list").performScrollToKey(pull.hashCode()).assertIsDisplayed()
         }
     }
 
     @Test
     fun lazyColumn_twoPages_checkIfAllItemsAreDisplayed() = runTest {
-        coEvery { apiService.search(any(), any(), 1) }.returns(ApiResult(repoListPage1.size, false, repoListPage1))
-        coEvery { apiService.search(any(), any(), 2) }.returns(ApiResult(repoListPage2.size, false, repoListPage2))
+        coEvery { apiService.getPullRequests(any(), any(), 1) }.returns(pullListPage1)
+        coEvery { apiService.getPullRequests(any(), any(), 2) }.returns(pullListPage2)
         launchScreen()
-        repoListPage1.forEach { repo ->
-            composeTestRule.onNodeWithTag("lazy_list").performScrollToKey(repo.hashCode()).assertIsDisplayed()
+        pullListPage1.forEach { pull ->
+            composeTestRule.onNodeWithTag("lazy_list").performScrollToKey(pull.hashCode()).assertIsDisplayed()
         }
-        repoListPage2.forEach { repo ->
-            composeTestRule.onNodeWithTag("lazy_list").performScrollToKey(repo.hashCode()).assertIsDisplayed()
+        pullListPage2.forEach { pull ->
+            composeTestRule.onNodeWithTag("lazy_list").performScrollToKey(pull.hashCode()).assertIsDisplayed()
         }
     }
 
     @Test
     fun lazyColumn_LoadMore_checkIfProgressBarIsDisplayed() = runTest {
-        coEvery { apiService.search(any(), any(), 1) }.returns(ApiResult(repoListPage1.size, false, repoListPage1))
-        coEvery { apiService.search(any(), any(), 2) }.coAnswers {
+        coEvery { apiService.getPullRequests(any(), any(), 1) }.returns(pullListPage1)
+        coEvery { apiService.getPullRequests(any(), any(), 2) }.coAnswers {
             delay(Duration.ofSeconds(2))
-            ApiResult(repoListPage2.size, false, repoListPage2)
+            pullListPage2
         }
         launchScreen()
-        repoListPage1.forEach { repo ->
-            composeTestRule.onNodeWithTag("lazy_list").performScrollToKey(repo.hashCode()).assertIsDisplayed()
+        pullListPage1.forEach { pull ->
+            composeTestRule.onNodeWithTag("lazy_list").performScrollToKey(pull.hashCode()).assertIsDisplayed()
         }
         composeTestRule.onNodeWithTag("loading_more").assertIsDisplayed()
     }

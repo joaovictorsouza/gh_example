@@ -9,7 +9,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import javax.inject.Inject
 
 @HiltViewModel
-class RepositoriesViewModel @Inject constructor(private val repoRepository: RepoRepository) : ViewModel() {
+class RepositoriesViewModel @Inject constructor(private val repoRepository: RepoRepository) :
+    ViewModel() {
     fun repos() =
         repoRepository.searchRepositories()
             .distinctUntilChanged()

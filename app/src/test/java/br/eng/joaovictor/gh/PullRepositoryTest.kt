@@ -7,9 +7,14 @@ import androidx.paging.testing.asSnapshot
 import br.eng.joaovictor.gh.data.datasource.remote.ApiService
 import br.eng.joaovictor.gh.data.datasource.remote.paging.RepoPagingDataSource
 import br.eng.joaovictor.gh.data.model.ApiResult
+import br.eng.joaovictor.gh.data.model.Pull
 import br.eng.joaovictor.gh.data.model.Repo
+import br.eng.joaovictor.gh.data.repository.PullRepository
+import br.eng.joaovictor.gh.data.repository.PullRepositoryImpl
 import br.eng.joaovictor.gh.data.repository.RepoRepository
 import br.eng.joaovictor.gh.data.repository.RepoRepositoryImpl
+import br.eng.joaovictor.gh.utils.pullListPage1
+import br.eng.joaovictor.gh.utils.pullListPage2
 import br.eng.joaovictor.gh.utils.repoListPage1
 import io.mockk.coEvery
 import io.mockk.every
@@ -22,55 +27,38 @@ import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
-class RepoRepositoryTest {
+class PullRepositoryTest {
 
     private lateinit var apiService: ApiService
-    private lateinit var repoRepository: RepoRepositoryImpl
+    private lateinit var pullRepository: PullRepository
 
     @Before
     fun setup() {
         apiService = mockk()
-        repoRepository = RepoRepositoryImpl(apiService)
+        pullRepository = PullRepositoryImpl(apiService)
         mockkStatic(Log::class)
         every { Log.isLoggable(any(), any()) } returns false
     }
 
     @Test
     fun `searchRepositories returns expected data`() = runTest {
-        val resultList = ApiResult<Repo>(
-            items = repoListPage1,
-            totalCount = repoListPage1.size,
-            incompleteResults = false
-        )
+        coEvery { apiService.getPullRequests(any(), any(), 1) } returns pullListPage1
+        coEvery { apiService.getPullRequests(any(), any(), match{ it != 1}) } returns emptyList()
 
-        val resultEmpty = ApiResult<Repo>(
-            items = emptyList(),
-            totalCount = 0,
-            incompleteResults = false
-        )
+        val result = pullRepository.getPulls("owner", "repo")
 
-        coEvery { apiService.search(any(), any(), 1) } returns resultList
-        coEvery { apiService.search(any(), any(), match{ it != 1}) } returns resultEmpty
-
-        val result = repoRepository.searchRepositories()
-
-        assertEquals(repoListPage1, result.asSnapshot {
+        assertEquals(pullListPage1, result.asSnapshot {
         })
     }
 
     @Test
     fun `searchRepositories handles empty data`() = runTest {
-        val resultEmpty = ApiResult<Repo>(
-            items = emptyList(),
-            totalCount = 0,
-            incompleteResults = false
-        )
 
-        coEvery { apiService.search(any(), any(), any()) } returns resultEmpty
+        coEvery { apiService.getPullRequests(any(), any(), any()) } returns emptyList()
 
-        val result = repoRepository.searchRepositories()
+        val result = pullRepository.getPulls("owner", "repo")
 
-        Assert.assertEquals(emptyList<Repo>(), result.asSnapshot {  })
+        Assert.assertEquals(emptyList<Pull>(), result.asSnapshot {  })
     }
 
 
@@ -79,7 +67,7 @@ class RepoRepositoryTest {
         coEvery { apiService.search(any(), any(), any()) } throws RuntimeException()
 
         try {
-            repoRepository.searchRepositories().first()
+            val result = pullRepository.getPulls("owner", "repo").first()
         } catch (e: Exception) {
             assert(e is RuntimeException)
         }
