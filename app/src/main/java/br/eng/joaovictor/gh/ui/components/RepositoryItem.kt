@@ -51,8 +51,10 @@ fun RepositoryItem(item: Repo, modifier: Modifier = Modifier) {
                 ownerName = item.owner.login
             )
             Text(
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.titleLarge,
                 text = item.name,
+                maxLines = 1,
+                softWrap = true,
                 modifier = Modifier.semantics { heading() }
             )
 
@@ -88,6 +90,7 @@ fun OwnerDetails(imageUrl: String, ownerName: String, modifier: Modifier = Modif
             clipToBounds = true,
             model = ImageRequest.Builder(LocalContext.current)
                 .data(imageUrl)
+                .memoryCacheKey(ownerName)
                 .crossfade(true)
                 .build(),
             contentDescription = stringResource(
