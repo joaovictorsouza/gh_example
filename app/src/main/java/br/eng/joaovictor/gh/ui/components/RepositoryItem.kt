@@ -90,6 +90,7 @@ fun OwnerDetails(imageUrl: String, ownerName: String, modifier: Modifier = Modif
             clipToBounds = true,
             model = ImageRequest.Builder(LocalContext.current)
                 .data(imageUrl)
+                .memoryCacheKey(ownerName)
                 .crossfade(true)
                 .build(),
             contentDescription = stringResource(
