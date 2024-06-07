@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import br.eng.joaovictor.gh.navigation.NavGraph
@@ -17,8 +19,11 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+
             GithubTestTheme {
-                NavGraph(navController = navController, modifier = Modifier)
+                NavGraph(
+                    navController = navController,
+                    modifier = Modifier)
             }
         }
     }

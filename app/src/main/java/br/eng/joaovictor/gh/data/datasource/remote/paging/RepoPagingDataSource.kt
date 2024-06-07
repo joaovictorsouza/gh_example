@@ -7,7 +7,7 @@ import br.eng.joaovictor.gh.data.model.Repo
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class RepoPagingDataSource @Inject constructor(private val apiService: ApiService): PagingSource<Int, Repo>() {
+class RepoPagingDataSource(private val apiService: ApiService): PagingSource<Int, Repo>() {
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Repo> {
         return try {
             val nextPage = params.key ?: 1
@@ -25,6 +25,9 @@ class RepoPagingDataSource @Inject constructor(private val apiService: ApiServic
     }
 
     override fun getRefreshKey(state: PagingState<Int, Repo>): Int? {
-        return state.anchorPosition
+        return state.anchorPosition?.let { anchorPosition ->
+            state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
+                ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
+        }
     }
 }

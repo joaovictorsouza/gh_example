@@ -1,6 +1,8 @@
 package br.eng.joaovictor.gh.di
 
 import br.eng.joaovictor.gh.data.datasource.remote.ApiService
+import br.eng.joaovictor.gh.data.repository.PullRepository
+import br.eng.joaovictor.gh.data.repository.PullRepositoryImpl
 import br.eng.joaovictor.gh.data.repository.RepoRepository
 import br.eng.joaovictor.gh.data.repository.RepoRepositoryImpl
 import dagger.Module
@@ -21,6 +23,16 @@ object RepositoryModule {
         apiService: ApiService,
     ): RepoRepository {
         return RepoRepositoryImpl(
+            apiService
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun providePullRepository(
+        apiService: ApiService,
+    ): PullRepository {
+        return PullRepositoryImpl(
             apiService
         )
     }
