@@ -38,8 +38,10 @@ fun PullItem(item: Pull, modifier: Modifier = Modifier) {
                 ownerName = item.user.login
             )
             Text(
-                style = MaterialTheme.typography.headlineMedium,
+                style = MaterialTheme.typography.titleLarge,
                 text = item.title,
+                maxLines = 1,
+                softWrap = true,
                 modifier = Modifier.semantics { heading() }
             )
 

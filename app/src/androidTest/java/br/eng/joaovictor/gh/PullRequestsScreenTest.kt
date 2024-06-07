@@ -81,7 +81,7 @@ class PullRequestsScreenTest {
     fun displayAppBarTitle() = runTest {
         launchScreen()
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        composeTestRule.onNodeWithText(appContext.getString(R.string.title_screen_repo)).assertIsDisplayed()
+        composeTestRule.onNodeWithText("Repo1").assertIsDisplayed()
     }
 
     @Test

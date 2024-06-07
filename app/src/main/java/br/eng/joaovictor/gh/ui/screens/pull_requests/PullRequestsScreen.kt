@@ -46,7 +46,7 @@ fun PullRequestsScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             GhTopBar(
-                title = stringResource(id = R.string.title_screen_repo),
+                title = repoName,
                 isBackEnabled = true,
                 onBack = { navController.popBackStack() }
             )
