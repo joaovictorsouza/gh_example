@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -33,7 +34,9 @@ fun PageError(onRetry: () -> Unit) {
             text = stringResource(R.string.error_http_exception),
             textAlign = TextAlign.Center
         )
-        OutlinedButton(onClick = { onRetry() }) {
+        OutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
+            onClick = { onRetry() }) {
             Text(stringResource(R.string.btn_retry))
         }
     }

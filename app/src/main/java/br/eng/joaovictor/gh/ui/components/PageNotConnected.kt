@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -31,7 +32,9 @@ fun PageNotConnected(onRetry: () -> Unit) {
             text = stringResource(R.string.txt_no_internet),
             textAlign = TextAlign.Center
         )
-        OutlinedButton(onClick = { onRetry() }) {
+        OutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
+            onClick = { onRetry() }) {
             Text(stringResource(R.string.btn_retry))
         }
     }
